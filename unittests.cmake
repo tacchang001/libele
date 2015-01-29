@@ -1,0 +1,11 @@
+add_unit_test(
+	test01
+	tests/test_hello.c
+	src/hello.c
+)
+add_unit_test(
+	test02
+	tests/pcunit_main.c
+	tests/pcunit_hello.c
+	src/hello.c
+)
