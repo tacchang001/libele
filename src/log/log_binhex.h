@@ -1,5 +1,4 @@
-#ifndef BINHEX_H_
-#define BINHEX_H_
+#pragma once
 /**
  * @file
  */
@@ -10,10 +9,8 @@
 extern "C" {
 #endif
 
-size_t text2bytes(char *in, void *out);
+size_t ele_log_text_to_bytes(char *in, void *out);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* BINHEX_H_ */

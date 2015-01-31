@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <PCUnit/PCUnit.h>
 
-#include "unittests.h"
+#include "pcunit_unittests.h"
 
 static test_example01(void)
 {

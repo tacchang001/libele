@@ -1,4 +1,4 @@
-#include "binhex.h"
+#include "log_binhex.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -12,7 +12,7 @@
 /**
  *
  */
-size_t text2bytes(char * const input, void *output)
+size_t ele_log_text_to_bytes(char * const input, void *output)
 {
 	assert(input != NULL);
 	assert(output != NULL);

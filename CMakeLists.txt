@@ -9,7 +9,7 @@ set (soserial "1")
 
 set (CMAKE_BUILD_TYPE Debug)
 
-file (GLOB SRCS src/*.c)
+file (GLOB SRCS src/*.c src/*/*.c)
 set (INCLUDES
     include
 )
@@ -22,10 +22,10 @@ include_directories (${INCLUDES})
 
 # 厳格に警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra")
-#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall"}
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 # -Wunused-parameter は警告のまま、その他の警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-parameter")
+#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-parameter")
 # ある局所変数が別の局所変数を隠す場合に警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wshadow")
 # 関数呼び出しがマッチしない型へのキャストに警告
@@ -38,7 +38,7 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wcast-align")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wwrite-strings")
 # プロトタイプの有無で引数の型変換が変わる際に警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wconversion")
-#  signedとunsignedで比較結果が変わる場合に警告
+# signedとunsignedで比較結果が変わる場合に警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wsign-compare")
 # 構造体や共用体が戻り値に使用されていたら警告
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Waggregate-return")
