@@ -1,8 +1,4 @@
-#include <PCUnit/PCUnit.h>
-#include <string.h>
-#include <stdio.h>
-
-PCU_Suite *ExampleTest_suite(void);
+#include "unittests.h"
 
 int main(void)
 {

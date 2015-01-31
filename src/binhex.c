@@ -17,7 +17,7 @@ size_t text2bytes(char * const input, void *output)
 	assert(input != NULL);
 	assert(output != NULL);
 
-	const static char *delm = " \r\n";
+	const char *delm = " \r\n";
 
 	size_t length = 0;
 	char *outptr = output;
@@ -33,7 +33,7 @@ size_t text2bytes(char * const input, void *output)
 				break;
 			}
 			if ((n >= 0) && (n <= UCHAR_MAX)) {
-				*(outptr + length) = n;
+				*(outptr + length) = (char)n;
 				++length;
 			} else {
 				fprintf(stderr, "out of range=%ld(<=%d)", n, UCHAR_MAX);

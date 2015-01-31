@@ -1,11 +1,13 @@
 #include "log_default.h"
 
+#include <linux/limits.h> // PATH_MAX
+
+#include <sys/time.h> // timeval
+
 #include <stdio.h>
 #include <assert.h>
-#include <sys/time.h> // timeval
 #include <time.h> // localtime
 #include <libgen.h> // basename
-#include <limits.h> // PATH_MAX
 #include <string.h> // strncpy
 
 #define DEFAULT_TIME_STRING_LENGTH_MAX		64
@@ -13,7 +15,7 @@
 /**
  *
  */
-const static char *sig[] = {
+static const char *sig[] = {
 	"ERROR",
 	"CRITICAL",
 	"WARNING",

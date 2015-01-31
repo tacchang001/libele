@@ -20,17 +20,14 @@ extern "C" {
  *
  */
 typedef enum {
-	LOG_LEVEL_MIN,
-	LOG_LEVEL_ERROR = LOG_LEVEL_MIN,
+	LOG_LEVEL_ERROR,
 	LOG_LEVEL_CRITICAL,
 	LOG_LEVEL_WARNING,
 	LOG_LEVEL_MESSAGE,
 	LOG_LEVEL_INFO,
 	LOG_LEVEL_DEBUG,
-	LOG_LEVEL_MAX,
-
-	LOG_LEVEL_NUM = (LOG_LEVEL_MAX - LOG_LEVEL_MIN)
 } log_levels;
+#define LOG_LEVEL_NUM (LOG_LEVEL_DEBUG + 1)
 
 typedef void (*log_func_t)(
 	log_levels,

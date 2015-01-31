@@ -23,7 +23,7 @@ static log_func_t handlers[LOG_LEVEL_NUM][LOG_FUNC_MAX];
  *
  */
 __attribute__((constructor))
-void init_log(void)
+static void init_log(void)
 {
 	int i, j;
 	for (i=0; i<LOG_LEVEL_NUM; i++) {
@@ -133,40 +133,40 @@ void log_dump(
 	assert(length > 0);
 	if (length <= 0) return;
 
-	const int column = 16;
+	const unsigned int column = 16;
 	const unsigned char *ptr = (unsigned char*)top;
 
-	int i=0;
-	int pos=0;
+	unsigned int i=0;
+	unsigned int pos=0;
 	while (length > pos) {
 		char logmsg[128];
 		memset(logmsg, 0, sizeof(logmsg));
-		const size_t lintop = 0;
-		const size_t linlen = 5;
-		const size_t hextop = lintop + linlen + 1;
-		const size_t hexlen = 24 + 1 + 24;
-		const size_t asctop = hextop + hexlen + 1;
-		const size_t asclen = 16;
-		const size_t maxlen = asctop + asclen;
+		const unsigned int lintop = 0;
+		const unsigned int linlen = 5;
+		const unsigned int hextop = lintop + linlen + 1;
+		const unsigned int hexlen = 24 + 1 + 24;
+		const unsigned int asctop = hextop + hexlen + 1;
+		const unsigned int asclen = 16;
+		const unsigned int maxlen = asctop + asclen;
 		memset(logmsg, ' ', maxlen + 1);
 
 		char addr[16];
 		sprintf(addr, "%04X:", i*column);
 		replace(logmsg, lintop, addr);
 
-		int j=0;
+		unsigned int j=0;
 		for (j=0; j<column; j++) {
 			pos = i*column + j;
-			unsigned int c = (unsigned int)*(ptr + pos);
+			const char c = (char)*(ptr + pos);
 			if (pos >= length) {
 				break;
 			} else {
-				int offset = (j < 8) ? 0 : 1;
+				unsigned int offset = (j < 8) ? 0 : 1;
 				char hex[16];
 				sprintf(hex, "%02x ", c);
 				replace(logmsg, hextop + j*3+offset, hex);
 				char let[8];
-				let[0] = (isprint(c) != 0) ? c : ' ';
+				if (isprint(c) != 0) let[0] = c; else let[0] = ' ';
 				let[1] = '\0';
 				replace(logmsg, asctop + j, let);
 			}
