@@ -84,7 +84,7 @@ typedef enum {
  *   # メモリ容量が規定容量に戻った
  */
 
-typedef void (*ele_log_func_t)(
+typedef void (*ele_log_handler_t)(
 	ele_log_level_t,
 	const char*,
 	const char*,
@@ -133,7 +133,7 @@ void ele_log_dump(
  */
 int ele_log_set_handler(
 	ele_log_level_t level,
-	ele_log_func_t log_func
+	ele_log_handler_t log_func
 );
 
 /**

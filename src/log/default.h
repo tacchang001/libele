@@ -13,7 +13,7 @@ extern "C" {
 /**
  *
  */
-void ele_log_print(
+void ele_log_print_handler(
     ele_log_level_t level,
     const char *file_name,
     const char *func_name,

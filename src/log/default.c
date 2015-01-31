@@ -1,4 +1,4 @@
-#include "log_default.h"
+#include "default.h"
 
 #include <linux/limits.h> // PATH_MAX
 #include <sys/time.h> // timeval
@@ -90,7 +90,7 @@ static int get_syslog_priority(ele_log_level_t level)
 /**
  *
  */
-void ele_log_print(
+void ele_log_print_handler(
     ele_log_level_t level,
     const char *file_name,
     const char *func_name,

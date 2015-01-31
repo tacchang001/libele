@@ -1,11 +1,11 @@
 add_unit_test(
 	test01
 	tests/test_ele_error.c
-	src/ele_error.c
+	src/err/error.c
 )
 add_unit_test(
 	test02
 	tests/pcunit_main.c
 	tests/test_pcunit_example.c
-	src/ele_error.c
+	src/err/error.c
 )

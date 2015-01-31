@@ -1,7 +1,5 @@
 #pragma once
 
-#include <errno.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,15 +17,35 @@ enum {
 	ELE_ERANGE = 1,  // output range error
 };
 
-/**
- *
- */
-void ele_error(const char * reason, const char * file, int line, int ele_errno);
+typedef void ele_error_handler_t(
+    const char * reason,
+    const char * file,
+    int line,
+    int gsl_errno);
 
 /**
  *
  */
-const char * ele_strerror(const int ele_errno);
+void
+ele_error(const char * reason, const char * file, int line, int ele_errno);
+
+/**
+ *
+ */
+const char *
+ele_strerror(const int ele_errno);
+
+/**
+ *
+ */
+ele_error_handler_t *
+ele_set_error_handler(ele_error_handler_t * new_handler);
+
+/**
+ *
+ */
+ele_error_handler_t *
+ele_set_error_handler_off(void);
 
 /**
  *

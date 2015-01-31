@@ -1,4 +1,4 @@
-#include "log_binhex.h"
+#include "binhex.h"
 
 #include <stdio.h>
 #include <assert.h>

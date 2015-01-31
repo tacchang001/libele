@@ -13,8 +13,7 @@ static test_example01(void)
 
 static test_example02(void)
 {
-    PCU_ASSERT_EQUAL(1+2, 2);
-//    PCU_ASSERT_EQUAL(1+2, 3);
+    PCU_ASSERT_EQUAL(1+2, 3);
 }
 
 PCU_Suite *ExampleTest_suite(void)
