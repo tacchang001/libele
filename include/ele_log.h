@@ -151,30 +151,30 @@ void ele_log_set_default_handler(
 	ele_log_level_t level
 );
 
-#define EleLogEmergency(fmt, ...)	ele_log_string(kLogLevelEmergency, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogAlert(fmt, ...)		ele_log_string(kLogLevelAlert, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogCritical(fmt, ...)	ele_log_string(kLogLevelCtitical, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogError(fmt, ...)		ele_log_string(kLogLevelError, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogWarning(fmt, ...)	ele_log_string(kLogLevelWarning, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogNotice(fmt, ...)		ele_log_string(kLogLevelNotice, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
-#define EleLogInfo(fmt, ...)		ele_log_string(kLogLevelInfo, __FILE__, __func__,__LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_emerg(fmt, ...)	ele_log_string(kLogLevelEmergency, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_alert(fmt, ...)	ele_log_string(kLogLevelAlert, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_crit(fmt, ...)		ele_log_string(kLogLevelCtitical, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_err(fmt, ...)		ele_log_string(kLogLevelError, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_warning(fmt, ...)	ele_log_string(kLogLevelWarning, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_notice(fmt, ...)	ele_log_string(kLogLevelNotice, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_info(fmt, ...)		ele_log_string(kLogLevelInfo, __FILE__, __func__,__LINE__, fmt, ##__VA_ARGS__)
 #if defined(DEBUG)
-#define EleLogDebug(fmt, ...)		ele_log_string(kLogLevelDebug, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
+#define ele_log_debug(fmt, ...)	ele_log_string(kLogLevelDebug, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__)
 #else
-#define EleLogDebug(fmt, ...)		/* NOP */
+#define ele_log_debug(fmt, ...)	/* NOP */
 #endif
 
-#define EleDumpEmergency(ptr, len)	ele_log_dump(kLogLevelEmergency, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpAlert(ptr, len)		ele_log_dump(kLogLevelAlert, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpCritical(ptr, len)	ele_log_dump(kLogLevelCtitical, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpError(ptr, len)		ele_log_dump(kLogLevelError, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpWarning(ptr, len)	ele_log_dump(kLogLevelWarning, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpNotice(ptr, len)	ele_log_dump(kLogLevelNotice, __FILE__, __func__, __LINE__, ptr, len)
-#define EleDumpInfo(ptr, len)		ele_log_dump(kLogLevelInfo, __FILE__, __func__,__LINE__, ptr, len)
+#define ele_log_dump_emerg(ptr, len)	ele_log_dump(kLogLevelEmergency, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_alert(ptr, len)	ele_log_dump(kLogLevelAlert, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_crit(ptr, len)	ele_log_dump(kLogLevelCtitical, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_err(ptr, len)		ele_log_dump(kLogLevelError, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_warning(ptr, len)	ele_log_dump(kLogLevelWarning, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_notice(ptr, len)	ele_log_dump(kLogLevelNotice, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_info(ptr, len)	ele_log_dump(kLogLevelInfo, __FILE__, __func__,__LINE__, ptr, len)
 #if defined(DEBUG)
-#define EleDumpDebug(ptr, len)		ele_log_dump(kLogLevelDebug, __FILE__, __func__, __LINE__, ptr, len)
+#define ele_log_dump_debug(ptr, len)	ele_log_dump(kLogLevelDebug, __FILE__, __func__, __LINE__, ptr, len)
 #else
-#define EleDumpDebug(ptr, len)		/* NOP */
+#define ele_log_dump_debug(ptr, len)	/* NOP */
 #endif
 
 #ifdef __cplusplus

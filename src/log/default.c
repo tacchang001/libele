@@ -90,7 +90,7 @@ static int get_syslog_priority(ele_log_level_t level)
 /**
  *
  */
-void ele_log_print_handler(
+void ele_log_syslog_handler(
     ele_log_level_t level,
     const char *file_name,
     const char *func_name,
@@ -117,6 +117,36 @@ void ele_log_print_handler(
 		syslog(get_syslog_priority(level), message);
 		fprintf(stderr, "%s: ** %s **: %s\n", tstr, sig[level], message);
 		break;
+	default:
+		assert(false);
+		break;
+	}
+}
+
+/**
+ *
+ */
+void ele_log_print_handler(
+    ele_log_level_t level,
+    const char *file_name,
+    const char *func_name,
+    const unsigned int line_no,
+    const char *message)
+{
+	assert(file_name != NULL);
+	if (file_name == NULL)
+		return;
+	assert(func_name != NULL);
+	if (func_name == NULL)
+		return;
+	assert(message != NULL);
+	if (message == NULL)
+		return;
+
+	char tstr[DEFAULT_TIME_STRING_LENGTH_MAX];
+	get_time_string(tstr);
+
+	switch (level) {
 	case kLogLevelError:
 	case kLogLevelWarning:
 		fprintf(stderr, "%s: ** %s **: %s\n", tstr, sig[level], message);

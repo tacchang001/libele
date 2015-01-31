@@ -12,11 +12,7 @@
 
 #define DEFAULT_FORM_STRING_LENGTH_MAX		64
 
-#ifndef LOG_FUNC_MAX
-#define LOG_FUNC_MAX	16
-#endif
-
-static ele_log_handler_t handlers[ELE_LOG_LEVEL_NUM][LOG_FUNC_MAX];
+static ele_log_handler_t handlers[ELE_LOG_LEVEL_NUM];
 
 /**
  *
@@ -24,15 +20,14 @@ static ele_log_handler_t handlers[ELE_LOG_LEVEL_NUM][LOG_FUNC_MAX];
 __attribute__((constructor))
 static void ele_log_constructor(void)
 {
-	int i, j;
-	for (i = 0; i < ELE_LOG_LEVEL_NUM; i++) {
-		handlers[i][0] = ele_log_print_handler;
-	}
-	for (i = 0; i < ELE_LOG_LEVEL_NUM; i++) {
-		for (j = 1; j < LOG_FUNC_MAX; j++) {
-			handlers[i][j] = NULL;
-		}
-	}
+	handlers[kLogLevelEmergency] = ele_log_syslog_handler;
+	handlers[kLogLevelAlert] = ele_log_syslog_handler;
+	handlers[kLogLevelCtitical] = ele_log_syslog_handler;
+	handlers[kLogLevelError] = ele_log_print_handler;
+	handlers[kLogLevelWarning] = ele_log_print_handler;
+	handlers[kLogLevelNotice] = ele_log_print_handler;
+	handlers[kLogLevelInfo] = ele_log_print_handler;
+	handlers[kLogLevelDebug] = ele_log_print_handler;
 }
 
 /**
@@ -68,12 +63,8 @@ void ele_vlog_string(
 	case kLogLevelInfo:
 	case kLogLevelDebug:
 		do {
-			int i = 0;
-			for (; i < LOG_FUNC_MAX; i++) {
-				if (handlers[level][i] != NULL) {
-					(handlers[level][i])(level, file_name, func_name, line_no,
-					                     msg);
-				}
+			if (handlers[level] != NULL) {
+				(handlers[level])(level, file_name, func_name, line_no, msg);
 			}
 		} while (0);
 		break;
@@ -198,13 +189,10 @@ int ele_log_set_handler(ele_log_level_t level, ele_log_handler_t log_func)
 {
 	int id = -1;
 	int j;
-	for (j = 0; j < LOG_FUNC_MAX; j++) {
-		ele_log_handler_t fp = handlers[level][j];
-		if (fp == NULL) {
-			id = j;
-			handlers[level][j] = log_func;
-			break;
-		}
+	ele_log_handler_t fp = handlers[level];
+	if (fp == NULL) {
+		id = j;
+		handlers[level] = log_func;
 	}
 
 	return id;
@@ -215,8 +203,8 @@ int ele_log_set_handler(ele_log_level_t level, ele_log_handler_t log_func)
  */
 void ele_log_remove_handler(ele_log_level_t level, int id)
 {
-	if (handlers[level][id] != NULL) {
-		handlers[level][id] = NULL;
+	if (handlers[level] != NULL) {
+		handlers[level] = NULL;
 	}
 }
 
