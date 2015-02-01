@@ -9,3 +9,8 @@ add_unit_test(
 	tests/test_pcunit_example.c
 	src/err/error.c
 )
+add_unit_test(
+	test03
+	tests/test_list.c
+	src/list.c
+)
