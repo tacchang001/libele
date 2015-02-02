@@ -1,6 +1,6 @@
 add_unit_test(
 	test01
-	tests/test_ele_error.c
+	tests/test_error.c
 	src/err/error.c
 )
 add_unit_test(
@@ -13,4 +13,9 @@ add_unit_test(
 	test03
 	tests/test_list.c
 	src/list.c
+)
+add_unit_test(
+	test04
+	tests/test_pool.c
+	src/pool.c
 )

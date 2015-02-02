@@ -11,17 +11,17 @@ extern "C" {
 /**
  *
  */
-enum {
+typedef enum {
 	ELE_SUCCESS = 0,
 	ELE_FAILURE = -1,
 	ELE_ERANGE = 1,  // output range error
-};
+} ele_result_t;
 
 typedef void ele_error_handler_t(
     const char * reason,
     const char * file,
     int line,
-    int gsl_errno);
+    int ele_errno);
 
 /**
  *
