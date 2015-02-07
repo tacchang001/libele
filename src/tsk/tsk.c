@@ -71,25 +71,21 @@ int ele_task_create(
 	pthread_attr_t a;
 	memset(&a, 0, sizeof(a));
 	if (pthread_attr_init(&a) != 0) {
-		perror("pthread_attr_init");
-		return -1;
+		ELE_ERROR("pthread_attr_init");
 	}
 	switch (attr.schedpolicy) {
 	case SCHED_FIFO:
 	case SCHED_RR:
 		if (pthread_attr_setinheritsched(&a, PTHREAD_EXPLICIT_SCHED) != 0) {
-			perror("pthread_attr_setinheritsched");
-			return -2;
+			ELE_ERROR("pthread_attr_setinheritsched");
 		}
 		if (pthread_attr_setschedpolicy(&a, attr.schedpolicy) != 0) {
-			perror("pthread_attr_setschedpolicy");
-			return -3;
+			ELE_ERROR("pthread_attr_setschedpolicy");
 		}
 		const struct sched_param sp = {
 			attr.schedparam
 		};
 		if (pthread_attr_setschedparam(&a, &sp) != 0) {
-			perror("pthread_attr_setschedparam");
 			/*
 			fprintf(stderr, "%d <= priority[%d] <= %d",
 				sched_get_priority_min(attr.schedpolicy),
@@ -97,7 +93,7 @@ int ele_task_create(
 				sched_get_priority_max(attr.schedpolicy)
 			);
 			*/
-			return -4;
+			ELE_ERROR("pthread_attr_setschedparam");
 		}
 		break;
 	default:
@@ -108,7 +104,7 @@ int ele_task_create(
 	func_call.arg = attr.arg;
 	pthread_t id = 0;
 	if (pthread_create(&id, &a, ele_task_entry, &func_call) != 0) {
-		perror("pthread_create");
+		ELE_ERROR("pthread_create");
 	}
 
 	rec->init_attr = attr;
@@ -127,12 +123,12 @@ int ele_task_destroy(int id)
 	const pthread_t tid = ele_task_get_thread_id(id);
 
 	if (pthread_cancel(tid) != 0) {
-		perror("pthread_cancel");
+		ELE_ERROR_CONTINUE("pthread_cancel");
 	}
 
 	void *result = NULL;
 	if (pthread_join(tid, &result) != 0) {
-		perror("pthread_join");
+		ELE_ERROR_CONTINUE("pthread_join");
 	}
 
 	return 0;

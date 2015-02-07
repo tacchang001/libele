@@ -5,17 +5,17 @@
 #include <stdio.h>
 
 /*
- * @note -Wunused-parameter
- * 引数は不要だがpthread_createの呼び出し規約上引数が必要。
+ *
+ *
  */
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
 static void
 ele_tsk_cleanup_container(void *arg)
 {
-	printf("%s\n", __func__);
+	printf("%s, arg=%p\n", __func__, arg);
 	return ;
 }
-#pragma GCC diagnostic warning "-Wunused-parameter"
+//#pragma GCC diagnostic warning "-Wunused-parameter"
 
 /*
  *

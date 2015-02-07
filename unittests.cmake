@@ -27,4 +27,5 @@ add_unit_test(
 	tests/test_tsk.c
 	src/tsk/tsk.c
 	src/tsk/container.c
+	src/err/error.c
 )

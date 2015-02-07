@@ -3,18 +3,18 @@
 #include <stdio.h>
 #include <pthread.h>
 
-static __thread ele_error_handler_t *
-ele_error_handler = NULL;
-
 static void no_error_handler(
     const char *reason,
     const char *file,
     int line,
     int ele_errno)
 {
-	printf("%s(%d): %d, %s\n", file, line, ele_errno, reason);
+	printf("%s(%d): [%d]%s\n", file, line, ele_errno, reason);
 	return;
 }
+
+static __thread ele_error_handler_t *
+ele_error_handler = no_error_handler;
 
 void ele_error(const char * reason, const char * file, int line, int ele_errno)
 {
