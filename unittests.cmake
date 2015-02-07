@@ -7,7 +7,10 @@ add_unit_test(
 	test02
 	tests/pcunit_main.c
 	tests/test_pcunit_example.c
+	tests/test_pcunit_tsk.c
 	src/err/error.c
+	src/tsk/tsk.c
+    src/tsk/container.c
 )
 add_unit_test(
 	test03
@@ -18,4 +21,10 @@ add_unit_test(
 	test04
 	tests/test_pool.c
 	src/pool.c
+)
+add_unit_test(
+	test05
+	tests/test_tsk.c
+	src/tsk/tsk.c
+	src/tsk/container.c
 )

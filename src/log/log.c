@@ -188,10 +188,8 @@ void ele_log_dump(
 int ele_log_set_handler(ele_log_level_t level, ele_log_handler_t log_func)
 {
 	int id = -1;
-	int j;
 	ele_log_handler_t fp = handlers[level];
 	if (fp == NULL) {
-		id = j;
 		handlers[level] = log_func;
 	}
 
@@ -201,7 +199,7 @@ int ele_log_set_handler(ele_log_level_t level, ele_log_handler_t log_func)
 /**
  *
  */
-void ele_log_remove_handler(ele_log_level_t level, int id)
+void ele_log_remove_handler(ele_log_level_t level)
 {
 	if (handlers[level] != NULL) {
 		handlers[level] = NULL;

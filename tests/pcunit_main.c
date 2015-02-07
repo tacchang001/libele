@@ -4,6 +4,7 @@ int main(void)
 {
 	const PCU_SuiteMethod suites[] = {
 		ExampleTest_suite,
+		TaskTest_suite,
 	};
 
 	PCU_enable_color();

@@ -1,3 +1,7 @@
+#pragma once
+
+#if 0
+
 typedef struct {
 	int count; /* actual pool count */
 	int max_count; /* pool array length (2^x ceil of ct) */
@@ -29,3 +33,5 @@ void *ele_pool_realloc(ele_pool_t *mp, void *p, int old_sz, int new_sz);
 
 /* Free the pool. */
 void ele_pool_destroy(ele_pool_t *mp);
+
+#endif

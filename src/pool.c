@@ -1,3 +1,5 @@
+#if 0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -266,3 +268,5 @@ void *mpool_realloc(ele_pool_t *mp, void *p, int old_sz, int new_sz)
 	ele_pool_free(mp, p, old_sz);
 	return r;
 }
+
+#endif

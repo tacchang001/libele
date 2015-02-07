@@ -1,3 +1,4 @@
+#if 0
 /* Randomly test / stress the allocator */
 
 #include <stdlib.h>
@@ -54,3 +55,7 @@ int main(int argc, char **argv)
 	putchar('\n');
 	return 0;
 }
+
+#else
+int main(int argc, char *argv[]) { return 0; }
+#endif

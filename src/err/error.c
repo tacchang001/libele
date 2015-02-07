@@ -12,7 +12,7 @@ static void no_error_handler(
     int line,
     int ele_errno)
 {
-	// do nothing
+	printf("%s(%d): %d, %s\n", file, line, ele_errno, reason);
 	return;
 }
 

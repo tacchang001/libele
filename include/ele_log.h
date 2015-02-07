@@ -140,8 +140,7 @@ int ele_log_set_handler(
  *
  */
 void ele_log_remove_handler(
-	ele_log_level_t level,
-	int id
+	ele_log_level_t level
 );
 
 /**

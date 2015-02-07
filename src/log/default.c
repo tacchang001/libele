@@ -114,8 +114,9 @@ void ele_log_syslog_handler(
 	case kLogLevelEmergency:
 	case kLogLevelAlert:
 	case kLogLevelCtitical:
-		syslog(get_syslog_priority(level), message);
-		fprintf(stderr, "%s: ** %s **: %s\n", tstr, sig[level], message);
+		syslog(get_syslog_priority(level), "%s", message);
+		fprintf(stderr, "%s: ** %s **: %s, %s(%d)\n",
+			tstr, sig[level], message, file_name, line_no);
 		break;
 	default:
 		assert(false);

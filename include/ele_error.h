@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+#include <errno.h>
+
 /*
  * gsl_error.hを参考にする。
  */
@@ -50,36 +52,40 @@ ele_set_error_handler_off(void);
 /**
  *
  */
-#define ELE_ERROR(reason, ele_errno) \
+#define ELE_ERROR(reason) \
    do { \
-	   ele_error (reason, __FILE__, __LINE__, ele_errno) ; \
-	   return ele_errno ; \
+	   const int error_no = errno; \
+	   ele_error (reason, __FILE__, __LINE__, error_no) ; \
+	   return ELE_FAILURE ; \
    } while (0)
 
 /**
  *
  */
-#define GSL_ERROR_RETURN(reason, ele_errno, value) \
+#define ELE_ERROR_RETURN(reason, value) \
 	do { \
-		ele_error (reason, __FILE__, __LINE__, ele_errno) ; \
+		const int error_no = errno; \
+		ele_error (reason, __FILE__, __LINE__, error_no) ; \
 		return value ; \
 	} while (0)
 
 /**
  *
  */
-#define GSL_ERROR_RETURN_NOTHING(reason, ele_errno) \
+#define ELE_ERROR_RETURN_NOTHING(reason) \
 	do { \
-		ele_error (reason, __FILE__, __LINE__, ele_errno) ; \
+		const int error_no = errno; \
+		ele_error (reason, __FILE__, __LINE__, error_no) ; \
 		return ; \
 	} while (0)
 
 /**
  *
  */
-#define GSL_ERROR_CONTINUE(reason, ele_errno) \
+#define ELE_ERROR_CONTINUE(reason) \
 	do { \
-		ele_error (reason, __FILE__, __LINE__, ele_errno) ; \
+		const int error_no = errno; \
+		ele_error (reason, __FILE__, __LINE__, error_no) ; \
 	} while (0)
 
 #ifdef __cplusplus
