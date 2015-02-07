@@ -6,7 +6,6 @@
 
 /*
  *
- *
  */
 //#pragma GCC diagnostic ignored "-Wunused-parameter"
 static void
@@ -19,13 +18,12 @@ ele_tsk_cleanup_container(void *arg)
 
 /*
  *
- *
  */
 void * ele_task_entry(void * arg)
 {
 	assert(arg != NULL);
 
-	int execute = 0; // avoid -Wunreachable-code warning
+	int execute = 0; // to avoid -Wunreachable-code warning
 	do {
 		pthread_cleanup_push(ele_tsk_cleanup_container, NULL);
 

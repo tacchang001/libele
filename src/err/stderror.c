@@ -7,7 +7,7 @@ const char * ele_strerror(const int ele_errno)
 		return "success";
 	case ELE_FAILURE:
 		return "failure";
-	case ELE_ERANGE:
+	case ELE_OUTOFRANGE:
 		return "output range error";
 	default:
 		return "unknown error code";

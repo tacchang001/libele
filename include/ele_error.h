@@ -16,7 +16,8 @@ extern "C" {
 typedef enum {
 	ELE_SUCCESS = 0,
 	ELE_FAILURE = -1,
-	ELE_ERANGE = 1,  // output range error
+	ELE_OUTOFRANGE 			= 0x08000001,  // output range
+	ELE_NOTENOUGH           = 0x08000002,  // not enough resources
 } ele_result_t;
 
 typedef void ele_error_handler_t(
@@ -52,40 +53,20 @@ ele_set_error_handler_off(void);
 /**
  *
  */
-#define ELE_ERROR(reason) \
+#define ELE_PERROR(reason) \
    do { \
 	   const int error_no = errno; \
 	   ele_error (reason, __FILE__, __LINE__, error_no) ; \
-	   return ELE_FAILURE ; \
    } while (0)
 
 /**
  *
  */
-#define ELE_ERROR_RETURN(reason, value) \
+#define ELE_ERROR_OUTOFRANGE(min, value, max) \
 	do { \
-		const int error_no = errno; \
-		ele_error (reason, __FILE__, __LINE__, error_no) ; \
-		return value ; \
-	} while (0)
-
-/**
- *
- */
-#define ELE_ERROR_RETURN_NOTHING(reason) \
-	do { \
-		const int error_no = errno; \
-		ele_error (reason, __FILE__, __LINE__, error_no) ; \
-		return ; \
-	} while (0)
-
-/**
- *
- */
-#define ELE_ERROR_CONTINUE(reason) \
-	do { \
-		const int error_no = errno; \
-		ele_error (reason, __FILE__, __LINE__, error_no) ; \
+		char msg[256]; \
+		snprintf(msg, sizeof(msg), "%d < %d < %d", min, value, max); \
+		ele_error (msg, __FILE__, __LINE__, ELE_OUTOFRANGE) ; \
 	} while (0)
 
 #ifdef __cplusplus
