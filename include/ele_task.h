@@ -32,6 +32,11 @@ int ele_task_destroy(int id);
 /**
  *
  */
+int ele_task_join(int id);
+
+/**
+ *
+ */
 pthread_t ele_task_get_thread_id(
 	const int id
 );

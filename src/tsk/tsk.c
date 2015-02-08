@@ -1,4 +1,4 @@
-#include "ele_tsk.h"
+#include "ele_task.h"
 
 #define ELE_TSK_GLOBAL
 #include "tsk.h"
@@ -129,6 +129,23 @@ int ele_task_destroy(int id)
 	if (pthread_cancel(tid) != 0) {
 		ELE_PERROR("pthread_cancel");
 	}
+
+	void *result = NULL;
+	if (pthread_join(tid, &result) != 0) {
+		ELE_PERROR("pthread_join");
+	}
+
+	return 0;
+}
+
+/*
+ *
+ */
+int ele_task_join(int id)
+{
+	assert(id > 0);
+
+	const pthread_t tid = ele_task_get_thread_id(id);
 
 	void *result = NULL;
 	if (pthread_join(tid, &result) != 0) {
