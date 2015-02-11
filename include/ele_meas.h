@@ -13,5 +13,3 @@
  *
  */
 void ele_meas_clock(uint32_t[ELE_MES_DATA_BLOCKS]);
-
-ele_result_t ele_meas_init(void);
