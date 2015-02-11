@@ -24,4 +24,4 @@ typedef struct {
 	void* arg;
 } ele_task_func_call_t;
 
-EXTERN void * ele_task_entry(void* arg);
+EXTERN void * ele_task_container(void* arg);

@@ -106,7 +106,7 @@ int ele_task_create(
 	func_call.entry = attr.entry;
 	func_call.arg = attr.arg;
 	pthread_t id = 0;
-	if (pthread_create(&id, &a, ele_task_entry, &func_call) != 0) {
+	if (pthread_create(&id, &a, ele_task_container, &func_call) != 0) {
 		ELE_PERROR("pthread_create");
 		return ELE_FAILURE;
 	}

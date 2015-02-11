@@ -19,7 +19,7 @@ ele_tsk_cleanup_container(void *arg)
 /*
  *
  */
-void * ele_task_entry(void * arg)
+void * ele_task_container(void * arg)
 {
 	assert(arg != NULL);
 
