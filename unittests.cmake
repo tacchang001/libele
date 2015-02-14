@@ -8,9 +8,11 @@ add_unit_test(
 	tests/pcunit_main.c
 	tests/test_pcunit_example.c
 	tests/test_pcunit_tsk.c
+	tests/test_pcunit_mempool.c
 	src/err/error.c
 	src/tsk/tsk.c
     src/tsk/container.c
+    src/mempool.c
 )
 add_unit_test(
 	test03
