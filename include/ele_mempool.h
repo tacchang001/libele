@@ -7,6 +7,7 @@
 typedef struct ele_mempool_desc {
 	void *head;
 	size_t (*get_max_size)(struct ele_mempool_desc *);
+	void (*print_pool)(struct ele_mempool_desc *);
 } ele_mempool_desc_t;
 
 typedef struct ele_mempool {

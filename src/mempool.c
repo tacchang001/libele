@@ -9,8 +9,6 @@
 
 static const size_t MIN_SIZE = 4095;
 
-#define ADDRESS(ptr) (((uint8_t *)ptr + sizeof(int)) & !sizeof(int))
-
 typedef struct {
 	struct mempool * head;
 	struct mempool * tail;
@@ -37,14 +35,42 @@ static mempool_t * mempool_get_next_address(mempool_t * pool) {
 		);
 }
 
-static void mempool_print_pool(mempool_t * pool) {
+static void mempool_print_page(mempool_t * pool) {
 	assert(pool != NULL);
 
-	printf("pool=%p\n", pool);
-	printf(" prev=%p\n", pool->prev);
-	printf(" next=%p\n", pool->next);
-	printf(" size=%d\n", pool->size);
-	printf(" desc=%p\n", pool->desc);
+	printf(" prev=%p <- %p(%d) -> %p\n",
+		pool->prev,
+		pool,
+		pool->size,
+		pool->next
+	);
+}
+
+static void mempool_print_pool(ele_mempool_desc_t * a_desc) {
+	assert(a_desc != NULL);
+
+	mempool_desc_t * desc = a_desc->head;
+	int i;
+	mempool_t * ptr = desc->head;
+	while (ptr != NULL) {
+		mempool_print_page(ptr);
+		ptr = ptr->next;
+		i++;
+	}
+}
+
+static size_t mempool_get_max_size(ele_mempool_desc_t * a_desc) {
+	assert(a_desc != NULL);
+
+	mempool_desc_t * desc = a_desc->head;
+	return desc->max_size;
+}
+
+static size_t mempool_get_size(ele_mempool_t * a_pool) {
+	assert(a_pool != NULL);
+
+	mempool_t * pool = a_pool->head;
+	return pool->size;
 }
 
 static unsigned int mempool_clp2(size_t x) {
@@ -74,6 +100,11 @@ static bool mempool_search_pool_for(mempool_t * pool) {
 		}
 	}
 
+if (!searched) {
+	ele_mempool_desc_t d;
+	d.head = desc;
+	mempool_print_pool(&d);
+}
 	return searched;
 }
 
@@ -88,20 +119,6 @@ static void mempool_append(mempool_t * point, mempool_t * element) {
 	point->next = element;
 	element->prev = point;
 	element->next = old_next;
-}
-
-static size_t mempool_get_max_size(ele_mempool_desc_t * a_desc) {
-	assert(a_desc != NULL);
-
-	mempool_desc_t * desc = a_desc->head;
-	return desc->max_size;
-}
-
-static size_t mempool_get_size(ele_mempool_t * a_pool) {
-	assert(a_pool != NULL);
-
-	mempool_t * pool = a_pool->head;
-	return pool->size;
 }
 
 static ele_mempool_desc_t mempool_get_desc(ele_mempool_t * a_pool) {
@@ -142,6 +159,7 @@ ele_mempool_create(const size_t max_size) {
 
 	result.head = desc;
 	result.get_max_size = mempool_get_max_size;
+	result.print_pool = mempool_print_pool;
 
 	return result;
 }
@@ -169,6 +187,12 @@ ele_mempool_alloc(ele_mempool_desc_t * const a_desc, const size_t a_size) {
 	assert(desc->head != NULL);
 	assert(desc->tail != NULL);
 
+	ele_mempool_t result = {
+		.head = NULL,
+		.data = NULL,
+		.get_desc = mempool_get_desc,
+		.get_size = mempool_get_size
+	};
 	mempool_t * pool = NULL;
 	const unsigned long term_addr =
 		(unsigned long) desc
@@ -187,16 +211,29 @@ ele_mempool_alloc(ele_mempool_desc_t * const a_desc, const size_t a_size) {
 		pool->size = a_size;
 		mempool_append(old_tail, pool);
 		desc->tail = pool;
+		result.head = pool;
+		result.data = &pool->data[0];
 	} else {
-
+		mempool_t * p = desc->head->next;
+		while (p != desc->tail) {
+			unsigned long start_addr = (unsigned long)mempool_get_next_address(p->prev);
+			unsigned long end_addr = (unsigned long)p;
+			unsigned long size = (unsigned long)mempool_get_address((void *)a_size);
+			if ((end_addr - start_addr) > size) {
+				mempool_t * pool = (mempool_t *)start_addr;
+				mempool_append(p->prev, pool);
+				pool->desc = desc;
+				pool->size = a_size;
+				result.head = pool;
+				result.data = &pool->data[0];
+				break;
+			}
+			p = p->next;
+		}
 	}
 
-	ele_mempool_t result = {
-		.head = pool,
-		.data = &pool->data[0],
-		.get_desc = mempool_get_desc,
-		.get_size = mempool_get_size
-	};
+	assert(pool != NULL);
+
 	return result;
 }
 
@@ -219,6 +256,9 @@ void ele_mempool_free(ele_mempool_t * const a_pool) {
 	if (pool == pool->desc->head)
 		return;
 
+	if (pool == pool->desc->tail) {
+		pool->desc->tail = pool->prev;
+	}
 	if (pool->next != NULL)
 		pool->next->prev = pool->prev;
 	if (pool->prev != NULL)
