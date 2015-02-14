@@ -116,7 +116,7 @@ ele_meas_init(void)
 //		perror("secure_getenv(ELE_MES_REPORT_DEVICE)");
 //		return ELE_FAILURE;
 //	}
-//	return ELE_FAILURE;
+	return ELE_FAILURE;
 }
 
 void ele_meas_clock(
