@@ -4,6 +4,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct ele_mempool_desc {
 	void *head;
 	size_t (*get_max_size)(struct ele_mempool_desc *);
@@ -32,3 +36,6 @@ ele_mempool_calloc(ele_mempool_desc_t * desc, size_t size);
 void
 ele_mempool_free(ele_mempool_t * pool);
 
+#ifdef __cplusplus
+}
+#endif

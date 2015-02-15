@@ -2,6 +2,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define ELE_LIST_MEMBER(type) \
 	type *prev; \
 	type *next
@@ -42,3 +46,7 @@ void* ele_list_search(
     ele_list_compare_t comp);
 
 size_t ele_list_size(const void *list);
+
+#ifdef __cplusplus
+}
+#endif

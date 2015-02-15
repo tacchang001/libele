@@ -2,6 +2,10 @@
 
 #include <pthread.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  *
  */
@@ -40,3 +44,7 @@ int ele_task_join(int id);
 pthread_t ele_task_get_thread_id(
 	const int id
 );
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,10 +1,10 @@
 #pragma once
 
+#include <errno.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <errno.h>
 
 /*
  * gsl_error.hを参考にする。
