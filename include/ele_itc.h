@@ -4,6 +4,7 @@
 #include "ele_error.h"
 
 #include <stddef.h>
+#include <sys/eventfd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,20 +16,20 @@ struct ele_queue {
 };
 
 ele_queue_t *
-ele_queue_open(const char * name);
+ele_queue_create(const char * name);
 
-ele_result_t
-ele_queue_close(ele_queue_t * qdes);
+void
+ele_queue_destroy(ele_queue_t * qdes);
 
-ele_result_t
+int
 ele_queue_send(ele_queue_t * qdes, const char * msg_ptr,
 		size_t msg_len, unsigned int msg_flags);
 
-ele_result_t
+int
 ele_queue_receive(ele_queue_t * qdes, char * msg_ptr,
 		size_t msg_len);
 
-int
+eventfd_t
 ele_queue_get_desc(ele_queue_t * qdes);
 
 #ifdef __cplusplus

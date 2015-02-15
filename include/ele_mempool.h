@@ -36,6 +36,8 @@ ele_mempool_calloc(ele_mempool_desc_t * desc, size_t size);
 void
 ele_mempool_free(ele_mempool_t * pool);
 
+#define ELE_MEMPOOL_VALID_DESC(ptr) (ptr.head != NULL)
+
 #ifdef __cplusplus
 }
 #endif
