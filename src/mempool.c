@@ -55,16 +55,8 @@ void mempool_print_pool(void) {
 	}
 }
 
-static size_t mempool_get_max_size(mempool_desc_t * a_desc) {
-	assert(a_desc != NULL);
-
-	return a_desc->max_size;
-}
-
-static size_t mempool_get_size(mempool_t * a_pool) {
-	assert(a_pool != NULL);
-
-	return a_pool->size;
+size_t mempool_get_max_size(void) {
+	return pools.max_size;
 }
 
 static unsigned int mempool_clp2(size_t x) {
@@ -188,7 +180,6 @@ void ele_mempool_free(void * const data_ptr) {
 	if (data_ptr == NULL) return;
 
 	mempool_t * pool = mempool_search_pool_for(data_ptr);
-	assert(pool != NULL);
 	if (pool != NULL) {
 		if (pool == pools.tail)
 			pools.tail = pool->prev;

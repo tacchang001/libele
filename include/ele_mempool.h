@@ -25,6 +25,7 @@ ele_mempool_free(void * pool);
 
 #ifndef NDEBUG
 void mempool_print_pool(void);
+size_t mempool_get_max_size();
 #endif
 
 #ifdef __cplusplus
