@@ -7,20 +7,22 @@
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "ele_mempool.h"
 
-#define QUEUE_ATTRIBUTE(ptr)((queue_attribute_t*)(ptr->attribute))
+const size_t DATA_AREA_SIZE = 4096 * 10; // @todo parameterise
+
+#define QUEUE_ATTRIBUTE(ptr)((itc_queue_attribute_t*)(ptr->attribute))
 
 typedef struct {
 	eventfd_t efd;
 	ele_mempool_desc_t pdesc;
 	char name[64];
-} queue_attribute_t ;
+} itc_queue_attribute_t;
 
 ele_queue_t *
-ele_queue_create(const char * name)
-{
+ele_queue_create(const char * name) {
 	assert(name != NULL);
 	assert(strlen(name) > 0);
 
@@ -30,14 +32,13 @@ ele_queue_create(const char * name)
 		return NULL;
 	}
 
-	const size_t DATA_AREA_SIZE = 4096 * 10; // T.B.D.
 	ele_mempool_desc_t pdesc = ele_mempool_create(DATA_AREA_SIZE);
-	if (! ELE_MEMPOOL_VALID_DESC(pdesc)) {
+	if (!ELE_MEMPOOL_VALID_DESC(pdesc)) {
 		close(efd);
 		return NULL;
 	}
 
-	queue_attribute_t * qattr = calloc(1, sizeof(queue_attribute_t));
+	itc_queue_attribute_t * qattr = calloc(1, sizeof(itc_queue_attribute_t));
 	if (qattr == NULL) {
 		perror("calloc");
 		ele_mempool_destroy(&pdesc);
@@ -61,9 +62,7 @@ ele_queue_create(const char * name)
 	return qdes;
 }
 
-void
-ele_queue_destroy(ele_queue_t * qdes)
-{
+void ele_queue_destroy(ele_queue_t * qdes) {
 	assert(qdes != NULL);
 	assert(qdes->attribute != NULL);
 	assert(QUEUE_ATTRIBUTE(qdes)->efd != -1);
@@ -76,15 +75,18 @@ ele_queue_destroy(ele_queue_t * qdes)
 	return;
 }
 
-int
-ele_queue_send(ele_queue_t * qdes, const char * msg_ptr,
-		size_t msg_len, unsigned int msg_flags)
-{
+int ele_queue_push_back(ele_queue_t * qdes, const char * msg_ptr,
+		size_t msg_len) {
 	assert(qdes != NULL);
 	assert(qdes->attribute != NULL);
 	assert(QUEUE_ATTRIBUTE(qdes)->efd != -1);
 	assert(msg_ptr != NULL);
 	assert(msg_len > 0);
+
+//	ele_mempool_t pool = ele_mempool_alloc(QUEUE_ATTRIBUTE(qdes)->pdesc,
+//			msg_len);
+//	memcpy(&pool.data[0], msg_ptr, msg_len);
+//#warning "T.B.D."
 
 	u_int64_t value = 1;
 	int write_result = eventfd_write(QUEUE_ATTRIBUTE(qdes)->efd, value);
@@ -96,10 +98,7 @@ ele_queue_send(ele_queue_t * qdes, const char * msg_ptr,
 	return ELE_SUCCESS;
 }
 
-int
-ele_queue_receive(ele_queue_t * qdes, char * msg_ptr,
-		size_t msg_len)
-{
+int ele_queue_pop_front(ele_queue_t * qdes, char * msg_ptr, size_t msg_len) {
 	assert(qdes != NULL);
 	assert(qdes->attribute != NULL);
 	assert(QUEUE_ATTRIBUTE(qdes)->efd != -1);
@@ -116,9 +115,7 @@ ele_queue_receive(ele_queue_t * qdes, char * msg_ptr,
 	return ELE_SUCCESS;
 }
 
-eventfd_t
-ele_queue_get_desc(ele_queue_t * qdes)
-{
+eventfd_t ele_queue_get_desc(ele_queue_t * qdes) {
 	assert(qdes != NULL);
 	assert(qdes->attribute != NULL);
 

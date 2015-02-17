@@ -22,11 +22,11 @@ void
 ele_queue_destroy(ele_queue_t * qdes);
 
 int
-ele_queue_send(ele_queue_t * qdes, const char * msg_ptr,
-		size_t msg_len, unsigned int msg_flags);
+ele_queue_push_back(ele_queue_t * qdes, const char * msg_ptr,
+		size_t msg_len);
 
 int
-ele_queue_receive(ele_queue_t * qdes, char * msg_ptr,
+ele_queue_pop_front(ele_queue_t * qdes, char * msg_ptr,
 		size_t msg_len);
 
 eventfd_t
