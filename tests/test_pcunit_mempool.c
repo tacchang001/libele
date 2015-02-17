@@ -17,35 +17,32 @@ static void test_example01(void)
 	const size_t page_size = 0x200;
 	const size_t page_num = 10;
 	const size_t max_size = page_size * page_num;
-	ele_mempool_desc_t mp =
-		ele_mempool_create(max_size);
-	PCU_ASSERT_PTR_NOT_NULL(mp.head);
-	PCU_ASSERT_TRUE(mp.get_max_size(&mp) > max_size);
+
+	ele_result_t result = ele_mempool_create(max_size);
+	PCU_ASSERT_TRUE(result == ELE_SUCCESS);
 
 	int j;
-	for (j=0; j<10; j++) {
+	for (j=0; j<30; j++) {
 		printf("--- %d ---\n", j);
-		mp.print_pool(&mp);
+//		mempool_print_pool();
 		int i;
-		ele_mempool_t m[page_num];
-		for (i=0; i<page_num-1; i++) {
+		void * m[page_num];
+		for (i=0; i<page_num; i++) {
 			printf("%d ", i);
-			m[i] = ele_mempool_calloc(&mp, page_size);
-			PCU_ASSERT_PTR_NOT_NULL(m[i].head);
-			PCU_ASSERT_PTR_NOT_NULL(m[i].data);
-			PCU_ASSERT_EQUAL(m[i].get_size(&m[i]), page_size);
-			ele_mempool_desc_t mp2 = m[i].get_desc(&m[i]);
-			PCU_ASSERT_PTR_EQUAL(mp.head, mp2.head);
+			m[i] = ele_mempool_calloc(page_size);
+			PCU_ASSERT_PTR_NOT_NULL(m[i]);
 		}
 		putchar('\n');
-		for (i=0; i<page_num-1; i++) {
+//		for (i=0; i<page_num; i++) printf("%d: %p\n", i, m[i]);
+//		mempool_print_pool();
+		for (i=0; i<page_num; i++) {
 			printf("%d ", i);
-			ele_mempool_free(&m[i]);
+			ele_mempool_free(m[i]);
 		}
 		putchar('\n');
 	}
 
-	ele_mempool_destroy(&mp);
+	ele_mempool_destroy();
 }
 
 static void test_example02(void)
@@ -53,47 +50,37 @@ static void test_example02(void)
 	const size_t page_size = 0x200;
 	const size_t page_num = 10;
 	const size_t max_size = page_size * page_num;
-	ele_mempool_desc_t mp =
-		ele_mempool_create(max_size);
-	PCU_ASSERT_PTR_NOT_NULL(mp.head);
-	PCU_ASSERT_TRUE(mp.get_max_size(&mp) > max_size);
+	ele_result_t result =	ele_mempool_create(max_size);
+	PCU_ASSERT_TRUE(result == ELE_SUCCESS);
 
-	ele_mempool_t m[page_num];
+	void * m[page_num];
 	int k;
 	for (k=0; k<page_num-1; k++) {
-		m[k] = ele_mempool_calloc(&mp, page_size);
-		PCU_ASSERT_PTR_NOT_NULL(m[k].head);
-		PCU_ASSERT_PTR_NOT_NULL(m[k].data);
-		PCU_ASSERT_EQUAL(m[k].get_size(&m[k]), page_size);
-		ele_mempool_desc_t mp2 = m[k].get_desc(&m[k]);
-		PCU_ASSERT_PTR_EQUAL(mp.head, mp2.head);
+		m[k] = ele_mempool_calloc(page_size);
+		PCU_ASSERT_PTR_NOT_NULL(m[k]);
 	}
 	for (k=0; k<page_num/2; k++) {
-		ele_mempool_free(&m[k]);
+		ele_mempool_free(m[k]);
 	}
 	int j;
 	for (j=0; j<10; j++) {
 		printf("--- %d ---\n", j);
-		mp.print_pool(&mp);
+		mempool_print_pool();
 		int i;
 		for (i=0; i<page_num/2; i++) {
 			printf("%d ", i);
-			m[i] = ele_mempool_calloc(&mp, page_size);
-			PCU_ASSERT_PTR_NOT_NULL(m[i].head);
-			PCU_ASSERT_PTR_NOT_NULL(m[i].data);
-			PCU_ASSERT_EQUAL(m[i].get_size(&m[i]), page_size);
-			ele_mempool_desc_t mp2 = m[i].get_desc(&m[i]);
-			PCU_ASSERT_PTR_EQUAL(mp.head, mp2.head);
+			m[i] = ele_mempool_calloc(page_size);
+			PCU_ASSERT_PTR_NOT_NULL(m[i]);
 		}
 		putchar('\n');
 		for (i=0; i<page_num/2; i++) {
 			printf("%d ", i);
-			ele_mempool_free(&m[i]);
+			ele_mempool_free(m[i]);
 		}
 		putchar('\n');
 	}
 
-	ele_mempool_destroy(&mp);
+	ele_mempool_destroy();
 }
 
 static void test_example03(void)
