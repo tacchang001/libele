@@ -36,7 +36,7 @@ static mempool_t * mempool_get_next_address(mempool_t * pool) {
 static void mempool_print_page(mempool_t * pool) {
 	assert(pool != NULL);
 
-	printf(" prev=%p <- %p(%p,%d) -> %p\n",
+	printf("prev=%p <- %p(%p,%d) -> %p\n",
 		pool->prev,
 		pool,
 		&pool->data[0],
