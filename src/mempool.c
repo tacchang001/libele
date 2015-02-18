@@ -6,10 +6,23 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "mempool.h"
 
 static const size_t MIN_SIZE = 4095;
+
+pthread_rwlock_t lock_rw = PTHREAD_RWLOCK_INITIALIZER;
+
+#define SCOPED_RDLOCK(m) \
+	pthread_rwlock_rdlock(&m); \
+	void u_(pthread_rwlock_t** m_) { pthread_rwlock_unlock(*m_); } \
+	__attribute__((__cleanup__(u_))) pthread_rwlock_t* scoped_lock_ = &m
+
+#define SCOPED_WRLOCK(m) \
+	pthread_rwlock_wrlock(&m); \
+	void u_(pthread_rwlock_t** m_) { pthread_rwlock_unlock(*m_); } \
+	__attribute__((__cleanup__(u_))) pthread_rwlock_t* scoped_lock_ = &m
 
 typedef struct {
 	struct mempool * head;
@@ -47,6 +60,7 @@ static void mempool_print_page(mempool_t * pool) {
 
 void mempool_print_pool(void) {
 	int i;
+	SCOPED_RDLOCK(lock_rw);
 	mempool_t * ptr = pools.head;
 	while (ptr != NULL) {
 		mempool_print_page(ptr);
@@ -56,10 +70,11 @@ void mempool_print_pool(void) {
 }
 
 size_t mempool_get_max_size(void) {
+	SCOPED_RDLOCK(lock_rw);
 	return pools.max_size;
 }
 
-static unsigned int mempool_clp2(size_t x) {
+static uint32_t mempool_clp2(uint32_t x) {
 	x = x - 1;
 	x = x | (x >> 1);
 	x = x | (x >> 2);
@@ -103,19 +118,23 @@ ele_mempool_create(const size_t max_size) {
 	assert(max_size > MIN_SIZE);
 
 	size_t pool_area_size = mempool_clp2(max_size);
-	pools.start_in_raw_area = malloc(pool_area_size);
-	if (pools.start_in_raw_area == NULL) {
-		perror("malloc");
-		return ELE_FAILURE;
-	}
-	pools.max_size = pool_area_size;
-	pools.end_in_raw_area = pools.start_in_raw_area + pool_area_size;
+	mempool_t * const_element = NULL;
+	SCOPED_WRLOCK(lock_rw);
+	do {
+		pools.start_in_raw_area = malloc(pool_area_size);
+		if (pools.start_in_raw_area == NULL) {
+			perror("malloc");
+			return ELE_FAILURE;
+		}
+		pools.max_size = pool_area_size;
+		pools.end_in_raw_area = pools.start_in_raw_area + pool_area_size;
 
-	mempool_t * const_element = (mempool_t *) mempool_get_address(
-		(void *) pools.start_in_raw_area + sizeof(mempool_desc_t)
-	);
-	pools.head = const_element;
-	pools.tail = const_element;
+		const_element = (mempool_t *) mempool_get_address(
+			(void *) pools.start_in_raw_area + sizeof(mempool_desc_t)
+		);
+		pools.head = const_element;
+		pools.tail = const_element;
+	} while (0);
 	const_element->next = NULL;
 	const_element->prev = NULL;
 	const_element->size = sizeof(const_element->data);
@@ -124,6 +143,7 @@ ele_mempool_create(const size_t max_size) {
 }
 
 void ele_mempool_destroy(void) {
+	SCOPED_RDLOCK(lock_rw);
 	free(pools.start_in_raw_area);
 }
 
@@ -131,6 +151,7 @@ void *
 ele_mempool_alloc(const size_t a_size) {
 	assert(a_size > 0);
 
+	SCOPED_WRLOCK(lock_rw);
 	mempool_t * pool = NULL;
 	mempool_t * const next_tail = mempool_get_next_address(pools.tail);
 	const void * const new_bottom_addr = mempool_get_address(
@@ -179,6 +200,7 @@ void ele_mempool_free(void * const data_ptr) {
 	assert(data_ptr != NULL);
 	if (data_ptr == NULL) return;
 
+	SCOPED_WRLOCK(lock_rw);
 	mempool_t * pool = mempool_search_pool_for(data_ptr);
 	if (pool != NULL) {
 		if (pool == pools.tail)

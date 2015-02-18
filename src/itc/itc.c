@@ -12,8 +12,6 @@
 
 #include "ele_mempool.h"
 
-const size_t DATA_AREA_SIZE = 4096 * 10; // @todo parameterise
-
 #define QUEUE_ATTRIBUTE(ptr)((itc_queue_attribute_t*)(ptr->attribute))
 
 typedef struct entry entry_t;
@@ -86,6 +84,7 @@ int ele_queue_push(ele_queue_desc_t * qdes,
 	memcpy(p, item, item->data_length);
 
 	entry_t * t = ele_mempool_alloc(sizeof(entry_t));
+	assert(t != NULL);
 	t->id = no;
 	t->item = p;
 	TAILQ_INSERT_TAIL(&QUEUE_ATTRIBUTE(qdes)->head, t, entries);
@@ -109,6 +108,7 @@ int ele_queue_pop(ele_queue_desc_t * qdes,
 	assert(item->data_length > 0);
 
 	entry_t * t = QUEUE_ATTRIBUTE(qdes)->head.tqh_first;
+	assert(t != NULL);
 	ele_queue_item_t * p = t->item;
 	memcpy(item, p, p->data_length);
 	TAILQ_REMOVE(&QUEUE_ATTRIBUTE(qdes)->head,
