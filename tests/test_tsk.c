@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "ele_tsk_create error\n");
 	}
 
-	sleep(2);
+	sleep(1);
 
 	ele_task_destroy(TASK_ID);
 
