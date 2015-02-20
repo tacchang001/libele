@@ -9,20 +9,11 @@
 #include <pthread.h>
 
 #include "mempool.h"
+#include "mutex_lock.h"
 
 static const size_t MIN_SIZE = 4095;
 
 pthread_rwlock_t lock_rw = PTHREAD_RWLOCK_INITIALIZER;
-
-#define SCOPED_RDLOCK(m) \
-	pthread_rwlock_rdlock(&m); \
-	void u_(pthread_rwlock_t** m_) { pthread_rwlock_unlock(*m_); } \
-	__attribute__((__cleanup__(u_))) pthread_rwlock_t* scoped_lock_ = &m
-
-#define SCOPED_WRLOCK(m) \
-	pthread_rwlock_wrlock(&m); \
-	void u_(pthread_rwlock_t** m_) { pthread_rwlock_unlock(*m_); } \
-	__attribute__((__cleanup__(u_))) pthread_rwlock_t* scoped_lock_ = &m
 
 typedef struct {
 	struct mempool * head;
@@ -119,8 +110,8 @@ ele_mempool_create(const size_t max_size) {
 
 	size_t pool_area_size = mempool_clp2(max_size);
 	mempool_t * const_element = NULL;
-	SCOPED_WRLOCK(lock_rw);
 	do {
+		SCOPED_WRLOCK(lock_rw);
 		pools.start_in_raw_area = malloc(pool_area_size);
 		if (pools.start_in_raw_area == NULL) {
 			perror("malloc");
@@ -151,36 +142,38 @@ void *
 ele_mempool_alloc(const size_t a_size) {
 	assert(a_size > 0);
 
-	SCOPED_WRLOCK(lock_rw);
 	mempool_t * pool = NULL;
-	mempool_t * const next_tail = mempool_get_next_address(pools.tail);
-	const void * const new_bottom_addr = mempool_get_address(
-		(void *) ((uint8_t *)next_tail
-		+ sizeof(mempool_t)
-		+ a_size)
-	);
-	if (pools.end_in_raw_area > new_bottom_addr) {
-		mempool_t * old_tail = pools.tail;
-		uint8_t * p = (uint8_t *)old_tail;
-		pool = next_tail;
-		pool->size = a_size;
-		mempool_append(old_tail, pool);
-		pools.tail = pool;
-	} else {
-		mempool_t * p = pools.head->next;
-		while (p != pools.tail) {
-			unsigned long start_addr = (unsigned long)mempool_get_next_address(p->prev);
-			unsigned long end_addr = (unsigned long)p;
-			unsigned long size = (unsigned long)mempool_get_address((void *)a_size);
-			if ((end_addr - start_addr) > size) {
-				pool = (mempool_t *)start_addr;
-				pool->size = a_size;
-				mempool_append(p->prev, pool);
-				break;
+	do {
+		SCOPED_WRLOCK(lock_rw);
+		mempool_t * const next_tail = mempool_get_next_address(pools.tail);
+		const void * const new_bottom_addr = mempool_get_address(
+			(void *) ((uint8_t *)next_tail
+			+ sizeof(mempool_t)
+			+ a_size)
+		);
+		if (pools.end_in_raw_area > new_bottom_addr) {
+			mempool_t * old_tail = pools.tail;
+			uint8_t * p = (uint8_t *)old_tail;
+			pool = next_tail;
+			pool->size = a_size;
+			mempool_append(old_tail, pool);
+			pools.tail = pool;
+		} else {
+			mempool_t * p = pools.head->next;
+			while (p != pools.tail) {
+				unsigned long start_addr = (unsigned long)mempool_get_next_address(p->prev);
+				unsigned long end_addr = (unsigned long)p;
+				unsigned long size = (unsigned long)mempool_get_address((void *)a_size);
+				if ((end_addr - start_addr) > size) {
+					pool = (mempool_t *)start_addr;
+					pool->size = a_size;
+					mempool_append(p->prev, pool);
+					break;
+				}
+				p = p->next;
 			}
-			p = p->next;
 		}
-	}
+	} while (0);
 
 	assert(pool != NULL);
 
@@ -200,15 +193,17 @@ void ele_mempool_free(void * const data_ptr) {
 	assert(data_ptr != NULL);
 	if (data_ptr == NULL) return;
 
-	SCOPED_WRLOCK(lock_rw);
-	mempool_t * pool = mempool_search_pool_for(data_ptr);
-	if (pool != NULL) {
-		if (pool == pools.tail)
-			pools.tail = pool->prev;
-		if (pool->next != NULL)
-			pool->next->prev = pool->prev;
-		if (pool->prev != NULL)
-			pool->prev->next = pool->next;
-	}
+	do {
+		SCOPED_WRLOCK(lock_rw);
+		mempool_t * pool = mempool_search_pool_for(data_ptr);
+		if (pool != NULL) {
+			if (pool == pools.tail)
+				pools.tail = pool->prev;
+			if (pool->next != NULL)
+				pool->next->prev = pool->prev;
+			if (pool->prev != NULL)
+				pool->prev->next = pool->next;
+		}
+	} while (0);
 }
 

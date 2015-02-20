@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <unistd.h>
+#include <stdbool.h>
+
 #include <PCUnit/PCUnit.h>
 
 #include "pcunit_unittests.h"
@@ -9,8 +12,7 @@
 #include "ele_mempool.h"
 #include "ele_error.h"
 
-#include <stdio.h>
-#include <unistd.h>
+static unsigned int seed = 1;
 
 static void test_example01(void)
 {
@@ -83,13 +85,61 @@ static void test_example02(void)
 	ele_mempool_destroy();
 }
 
+#define LOOP_SIZE 8
+#define PAGE_SIZE 1024
+#define CELL_SIZE (PAGE_SIZE / LOOP_SIZE)
+
+static void * test_pool_user_thread(void * arg) {
+	const int loop = LOOP_SIZE;
+	void * ptr[loop];
+	int i;
+	for (i=0; i<loop; i++) {
+		ptr[i] = ele_mempool_calloc(CELL_SIZE);
+		PCU_ASSERT_PTR_NOT_NULL(ptr[i]);
+		int waittm = random();
+		waittm %= 1000;
+		usleep(waittm * 10);
+	}
+	for (i=0; i<loop; i++) {
+		int waittm = random();
+		waittm %= 1000;
+		usleep(waittm * 10);
+		ele_mempool_free(ptr[i]);
+	}
+	return arg;
+}
+
 static void test_example03(void)
 {
-    PCU_ASSERT_EQUAL(1+1, 2);
+	const int THREAD_NUM = 20;
+	pthread_t id[THREAD_NUM];
+	size_t max_size = PAGE_SIZE * THREAD_NUM;
+
+	ele_result_t result = ele_mempool_create(max_size);
+	PCU_ASSERT_TRUE(result == ELE_SUCCESS);
+
+	int i;
+    for (i=0; i<THREAD_NUM; i++) {
+    	if (pthread_create(&id[i], NULL, test_pool_user_thread, &i) != 0) {
+    		perror("pthread_create");
+    		PCU_ASSERT_TRUE(false);
+    	}
+    }
+    for (i=0; i<THREAD_NUM; i++) {
+    	pthread_join(id[i], NULL);
+    	printf("%d ", i);
+    }
+    putchar('\n');
+
+	ele_mempool_destroy();
+
+	PCU_ASSERT_TRUE(true);
 }
 
 PCU_Suite *MemoryPoolTest_suite(void)
 {
+	rand_r(&seed);
+
 	static PCU_Test tests[] = {
 		{ "memory pool 01", test_example01 },
 		{ "memory pool 02", test_example02 },
