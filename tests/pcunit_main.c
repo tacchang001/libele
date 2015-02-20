@@ -6,6 +6,7 @@ int main(void)
 		ExampleTest_suite,
 		MemoryPoolTest_suite,
 		TaskTest_suite,
+		ItcTest_suite,
 	};
 
 	PCU_enable_color();

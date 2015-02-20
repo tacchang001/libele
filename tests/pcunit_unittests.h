@@ -7,4 +7,4 @@
 PCU_Suite * ExampleTest_suite(void);
 PCU_Suite * TaskTest_suite(void);
 PCU_Suite * MemoryPoolTest_suite(void);
-
+PCU_Suite * ItcTest_suite(void);

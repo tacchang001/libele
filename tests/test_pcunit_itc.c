@@ -8,6 +8,7 @@
 
 #include "ele_task.h"
 #include "ele_error.h"
+#include "ele_itc.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -47,59 +48,27 @@ static void test_example01(void)
 		fprintf(stderr, "ele_tsk_create error\n");
 	}
 
-	sleep(1);
-
-	ele_task_destroy(TASK_ID);
+	ele_task_join(TASK_ID);
 }
 
 static void test_example02(void)
 {
-	int a = 10;
-	ele_task_init_attr_t attr = {
-		.id = TASK_ID,
-		.schedpolicy = SCHED_FIFO, // root authority is necessary
-		.schedparam = 1,
-		.entry = anything,
-		.arg = &a
-	};
-
-	if (ele_task_create(attr) != ELE_SUCCESS) {
-		fprintf(stderr, "ele_tsk_create error\n");
-	}
-
-	sleep(1);
-
-	ele_task_destroy(TASK_ID);
+    PCU_ASSERT_EQUAL(1+2, 3);
 }
 
 static void test_example03(void)
 {
-	int a = 10;
-	ele_task_init_attr_t attr = {
-		.id = TASK_ID,
-		.schedpolicy = SCHED_RR, // root authority is necessary
-		.schedparam = 1,
-		.entry = anything,
-		.arg = &a
-	};
-
-	if (ele_task_create(attr) != ELE_SUCCESS) {
-		fprintf(stderr, "ele_tsk_create error\n");
-	}
-
-	sleep(1);
-
-	ele_task_destroy(TASK_ID);
+    PCU_ASSERT_EQUAL(1+2, 3);
 }
 
-PCU_Suite *TaskTest_suite(void)
+PCU_Suite *ItcTest_suite(void)
 {
 	static PCU_Test tests[] = {
-		{ "SCHED_OTHER", test_example01 },
-		{ "SCHED_FIFO", test_example02 },
-		{ "SCHED_RR", test_example03 },
+		{ "itc 01", test_example01 },
+		{ "itc 02", test_example02 },
+		{ "itc 03", test_example03 },
 	};
 	static PCU_Suite suite = {
-		"ExampleTest", tests, sizeof tests / sizeof tests[0] };
+		"Inter Thread Communication Test", tests, sizeof tests / sizeof tests[0] };
 	return &suite;
 }

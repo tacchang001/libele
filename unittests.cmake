@@ -9,10 +9,12 @@ add_unit_test(
 	tests/test_pcunit_example.c
 	tests/test_pcunit_mempool.c
 	tests/test_pcunit_tsk.c
+	tests/test_pcunit_itc.c
 	src/err/error.c
 	src/tsk/tsk.c
     src/tsk/container.c
     src/mempool.c
+    src/itc/itc.c
 )
 add_unit_test(
 	test03
