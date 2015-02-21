@@ -44,11 +44,11 @@ static void test_example01(void)
 		.arg = &a
 	};
 
-	if (ele_task_create(attr) != ELE_SUCCESS) {
-		fprintf(stderr, "ele_tsk_create error\n");
-	}
-
-	ele_task_join(TASK_ID);
+//	if (ele_task_create(attr) != ELE_SUCCESS) {
+//		fprintf(stderr, "ele_tsk_create error\n");
+//	}
+//
+//	ele_task_join(TASK_ID);
 }
 
 static void test_example02(void)
