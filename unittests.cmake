@@ -23,11 +23,6 @@ add_unit_test(
 )
 add_unit_test(
 	test04
-	tests/test_pool.c
-	src/pool.c
-)
-add_unit_test(
-	test05
 	tests/test_tsk.c
 	src/tsk/tsk.c
 	src/tsk/container.c
