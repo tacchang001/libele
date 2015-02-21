@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+#include <sched.h>
+
 #include "ele_task.h"
 
 #define ELE_TSK_GLOBAL
@@ -8,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "ele_error.h"
 
@@ -24,6 +28,24 @@ static void ele_task_tab_init(void)
 		tab[i].init_attr.id = INVALID_TSK_NO;
 		tab[i].thread_id = 0;
 	}
+}
+
+static void print_thread_affinity(int tskno, int cpu, const pthread_t id) {
+#ifndef NDEBUG
+	int cores = sysconf(_SC_NPROCESSORS_ONLN);
+	cpu_set_t cpuset;
+	int result = pthread_getaffinity_np(id, sizeof(cpuset), &cpuset);
+	if (result == -1) {
+		perror("pthread_getaffinity_np");
+		return;
+	}
+	int i;
+	for (i=0; i<cores; i++) {
+		if (CPU_ISSET(i, &cpuset)) {
+			printf("thread(%d) on %d -> %d/%d\n", tskno, cpu, i, cores);
+		}
+	}
+#endif
 }
 
 /*
@@ -109,6 +131,29 @@ int ele_task_create(
 	if (pthread_create(&id, &a, ele_task_container, &func_call) != 0) {
 		ELE_PERROR("pthread_create");
 		return ELE_FAILURE;
+	}
+
+	if (attr.cpu >= 0) {
+		const int cores = sysconf(_SC_NPROCESSORS_ONLN);
+		if (attr.cpu > cores) {
+			fprintf(stderr, "cpu=%d > %d\n", cores, attr.cpu);
+			return ELE_FAILURE;
+		}
+		cpu_set_t cpuset;
+		CPU_ZERO(&cpuset);
+//		int result = pthread_getaffinity_np(id, sizeof(cpu_set_t), &cpuset);
+//		if (result == -1) {
+//			perror("pthread_getaffinity_np");
+//			return ELE_FAILURE;
+//		}
+		CPU_SET(attr.cpu, &cpuset);
+		int result = pthread_setaffinity_np(id, sizeof(cpu_set_t), &cpuset);
+		if (result == -1) {
+			perror("pthread_setaffinity_np");
+			fprintf(stderr, "cpu = %d\n", attr.cpu);
+			return ELE_FAILURE;
+		}
+		print_thread_affinity(attr.id, attr.cpu, id);
 	}
 
 	rec->init_attr = attr;

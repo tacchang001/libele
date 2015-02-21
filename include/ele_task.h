@@ -18,6 +18,7 @@ typedef struct {
 	int id;
 	int schedpolicy;
 	int schedparam;
+	int cpu; // -1: disable
 	ele_task_entry_t entry;
 	void* arg;
 } ele_task_init_attr_t;
