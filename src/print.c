@@ -50,19 +50,22 @@ void ele_printable(bool enable) {
 			enable ? print_handler : ele_null_print;
 		current_printerr_handler =
 			enable ? printerr_handler : ele_null_printerr;
+		printable = enable;
 	}
 }
 
-inline bool ele_get_printable(void) {
+inline bool ele_is_printable(void) {
 	return printable;
 }
 
 void ele_set_print_handler(ele_print_handler_t handler) {
 	assert(handler != NULL);
 	print_handler = handler;
+	if (printable) current_print_handler = print_handler;
 }
 
 void ele_set_printerr_handler(ele_printerr_handler_t handler) {
 	assert(handler != NULL);
 	printerr_handler = handler;
+	if (printable) current_printerr_handler = printerr_handler;
 }

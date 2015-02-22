@@ -11,6 +11,8 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include "ele_error.h"
 #include "ele_net.h"
@@ -22,10 +24,6 @@
 #ifndef ELE_MES_REPORT_DEST_PORT
 #define ELE_MES_REPORT_DEST_PORT "ELE_MES_REPORT_DEST_PORT"
 #endif
-
-//#ifndef ELE_MES_REPORT_DEVICE
-//#define ELE_MES_REPORT_DEVICE "ELE_MES_REPORT_DEVICE"
-//#endif
 
 static const int WELL_KNOWN_PORT_MAX = 1023;
 
@@ -39,27 +37,24 @@ ele_meas_init(void)
 {
 	const char * const ipv4_name = getenv(ELE_MES_REPORT_DEST_IPV4);
 	if (ipv4_name == NULL) {
-		perror("getenv(ELE_MES_REPORT_DEST_IPV4)");
 		return ELE_FAILURE;
 	}
 
 	const char * const port_name = getenv(ELE_MES_REPORT_DEST_PORT);
 	if (port_name == NULL) {
-		perror("getenv(ELE_MES_REPORT_DEST_PORT)");
 		return ELE_FAILURE;
 	}
-	if (strlen(port_name) <= 0) {
-		perror("ELE_MES_REPORT_DEST_PORT: invalid length");
-	}
+	ele_print("mes enabled. %s/%s\n", ipv4_name, port_name);
 	int port = (int)strtol(port_name, (char**)NULL, 10);
 	if (port == LONG_MAX || port < WELL_KNOWN_PORT_MAX) {
-		perror("ELE_MES_REPORT_DEST_PORT: invalid value");
-		return -1;
+		ele_printerr("mes: %d < ELE_MES_REPORT_DEST_PORT:%d\n",
+			WELL_KNOWN_PORT_MAX, port);
+		return ELE_FAILURE;
 	}
 
 	int s = sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (s == -1) {
-		perror("socket");
+		ele_printerr("socket=%x(%s)\n", errno, strerror(errno));
 		return ELE_FAILURE;
 	}
 
@@ -116,12 +111,20 @@ ele_meas_init(void)
 //		perror("secure_getenv(ELE_MES_REPORT_DEVICE)");
 //		return ELE_FAILURE;
 //	}
-	return ELE_FAILURE;
+	return ELE_SUCCESS;
 }
 
 void ele_meas_clock(
 	uint32_t attr[ELE_MES_DATA_BLOCKS])
 {
+#ifndef NDEBUG
+	static bool errmsg = false;
+	if (! errmsg) {
+		if (sock == -1) ele_printerr("ele_meas_clock is disabled.\n");
+	}
+	errmsg = true;
+#endif
+
 	if (sock == -1) return;
 
 	struct meas_data_packet {
