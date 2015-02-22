@@ -44,7 +44,7 @@ int ele_printerr(const char *format, ...) {
 	return result;
 }
 
-void ele_printable(bool enable) {
+void ele_set_printable(bool enable) {
 	if (printable != enable) {
 		current_print_handler =
 			enable ? print_handler : ele_null_print;

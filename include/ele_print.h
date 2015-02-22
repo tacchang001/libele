@@ -13,7 +13,7 @@ int ele_printerr(const char *format, ...);
 typedef int (*ele_print_handler_t)(const char *format, ...);
 typedef int (*ele_printerr_handler_t)(const char *format, ...);
 
-void ele_printable(bool enable);
+void ele_set_printable(bool enable);
 bool ele_is_printable(void);
 
 void ele_set_print_handler(ele_print_handler_t handler);
