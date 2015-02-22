@@ -12,7 +12,6 @@ add_unit_test(
 	tests/test_pcunit_itc.c
 	src/err/error.c
 	src/tsk/tsk.c
-    src/tsk/container.c
     src/mempool.c
     src/itc/itc.c
 )
@@ -25,6 +24,5 @@ add_unit_test(
 	test04
 	tests/test_tsk.c
 	src/tsk/tsk.c
-	src/tsk/container.c
 	src/err/error.c
 )

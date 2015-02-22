@@ -12,6 +12,7 @@ set (CMAKE_BUILD_TYPE Debug)
 file (GLOB SRCS src/*.c src/*/*.c)
 set (INCLUDES
     include
+    src
 )
 include_directories (${INCLUDES})
 
